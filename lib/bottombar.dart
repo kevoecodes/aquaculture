@@ -1,9 +1,12 @@
 import 'package:aquaculture/history.dart';
 import 'package:aquaculture/home.dart';
+import 'package:aquaculture/model/reading.dart';
 import 'package:aquaculture/profile.dart';
 import 'package:flutter/material.dart';
 
 class MyBottomNavigationBar extends StatefulWidget {
+  const MyBottomNavigationBar({super.key});
+
   @override
   _MyBottomNavigationBarState createState() => _MyBottomNavigationBarState();
 }
@@ -15,6 +18,12 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     HistoryScreen(),
     ProfileScreen(),
   ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    
+    Reading.readingWebSocket(context);
+  }
 
   @override
   Widget build(BuildContext context) {

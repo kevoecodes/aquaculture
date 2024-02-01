@@ -1,12 +1,21 @@
+import 'dart:convert';
+
 import 'package:aquaculture/bottombar.dart';
+import 'package:aquaculture/utils/api.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,6 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
             // mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(
+                height: 50,
+              ),
               Image.asset(
                 'assets/aq.png',
                 width: 100,
@@ -37,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextFormField(
-                  // controller: emailController,
+                  controller: userNameController,
                   // validator: validateEmail,
-                  // keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.text,
                   style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
                     filled: true,
@@ -66,9 +78,10 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextFormField(
-                  // controller: emailController,
+                  controller: passwordController,
+                  obscureText: true,
                   // validator: validateEmail,
-                  // keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.text,
                   style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
                     filled: true,
@@ -100,10 +113,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextButton(
                         onPressed: () {
                           // Your onPressed logic here
-                          Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => MyBottomNavigationBar()));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (BuildContext context) =>
+                          //             MyBottomNavigationBar()));
+                          loginAction();
                         },
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
@@ -129,5 +144,30 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  loginAction() async {
+    var data = {
+      "username": userNameController.text,
+      "password": passwordController.text
+    };
+
+    var res =
+        await CallApi().postRequest(data, 'api/auth/login', context: context);
+    if (res != null) {
+      print(res.statusCode);
+      if (res.statusCode == 200) {
+        var body = json.decode(res.body);
+        print(body);
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        sharedPreferences.setString('user', json.encode(body['user']));
+        sharedPreferences.setString('token', json.encode(body['token']));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => MyBottomNavigationBar()));
+      }
+    }
   }
 }

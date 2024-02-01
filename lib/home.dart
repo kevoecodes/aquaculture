@@ -1,4 +1,7 @@
+import 'package:aquaculture/model/reading.dart';
+import 'package:aquaculture/redux/app_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,234 +11,270 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Home',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
+    return StoreConnector<AppState, Reading>(
+        converter: (store) => store.state.reading!,
+        builder: (context, reading) {
+          return Scaffold(
+            body: SafeArea(
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Home',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                            ),
+                          ),
+                          Image.asset(
+                            'assets/lo.png',
+                            width: 24, // Adjust the width as needed
+                            height: 24, // Adjust the height as needed
+                          ),
+                        ],
                       ),
                     ),
-                    Image.asset(
-                      'assets/lo.png',
-                      width: 24, // Adjust the width as needed
-                      height: 24, // Adjust the height as needed
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: makeItem(
-                    head: "38",
-                    subhead: 'Temperature',
                   ),
-                ),
-                Expanded(
-                  child: makeItem(
-                    head: "100nt",
-                    subhead: 'oxygen',
-                  ),
-                )
-              ],
-            )),
-            SliverToBoxAdapter(
-  child: Padding(
-    padding: const EdgeInsets.all(10.0),
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.indigo[300], // Grey background color
-        borderRadius: BorderRadius.circular(10), // Rounded corners
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Center(
-          child: Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: [
-              // First Row
-              TableRow(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      '1000L',
-                      style: TextStyle(color: Colors.white, fontSize: 18), // Adjust the font size
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      '60ntu',
-                      style: TextStyle(color: Colors.white, fontSize: 18), // Adjust the font size
-                    ),
-                  ),
-                ],
-              ),
-
-              // First Row Labels
-              TableRow(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Water Level',
-                      style: TextStyle(color: Colors.white, fontSize: 16), // Adjust the font size
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Turbidity Level',
-                      style: TextStyle(color: Colors.white, fontSize: 16), // Adjust the font size
-                    ),
-                  ),
-                ],
-              ),
-
-              // Second Row
-              TableRow(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      '100mcg/l',
-                      style: TextStyle(color: Colors.white, fontSize: 18), // Adjust the font size
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      '7',
-                      style: TextStyle(color: Colors.white, fontSize: 18), // Adjust the font size
-                    ),
-                  ),
-                ],
-              ),
-
-              // Second Row Labels
-              TableRow(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Ammonia Value',
-                      style: TextStyle(color: Colors.white, fontSize: 16), // Adjust the font size
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 8),
-                    child: Text(
-                      'PH Value',
-                      style: TextStyle(color: Colors.white, fontSize: 16), // Adjust the font size
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  ),
-),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.indigo[900], // Grey background color
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  child: const Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Temperature is Good For Fish",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                  SliverToBoxAdapter(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: makeItem(
+                          head: "${reading.temperature} C",
+                          subhead: 'Temperature',
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.indigo[900], // Grey background color
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  child: const Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Temperature is Good For Fish",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(
+                        child: makeItem(
+                          head: "${reading.dissolvedOxygen} NT",
+                          subhead: 'oxygen',
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.indigo[900], // Grey background color
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  child: const Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Temperature is Good For Fish",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  )),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.indigo[300], // Grey background color
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
                         ),
-                      ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Center(
+                            child: Table(
+                              defaultVerticalAlignment:
+                                  TableCellVerticalAlignment.middle,
+                              children: [
+                                // First Row
+                                TableRow(
+                                  children: [
+                                    Container(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8),
+                                      child: Text(
+                                        '1000L',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                18), // Adjust the font size
+                                      ),
+                                    ),
+                                    Container(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8),
+                                      child: Text(
+                                        '60ntu',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                18), // Adjust the font size
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                // First Row Labels
+                                TableRow(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        'Water Level',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                16), // Adjust the font size
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        'Turbidity Level',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                16), // Adjust the font size
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                // Second Row
+                                TableRow(
+                                  children: [
+                                    Container(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8),
+                                      child: Text(
+                                        '100mcg/l',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                18), // Adjust the font size
+                                      ),
+                                    ),
+                                    Container(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8),
+                                      child: Text(
+                                        '7',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                18), // Adjust the font size
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                // Second Row Labels
+                                TableRow(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        'Ammonia Value',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                16), // Adjust the font size
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        'PH Value',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                16), // Adjust the font size
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.indigo[900], // Grey background color
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                        ),
+                        child: const Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Temperature is Good For Fish",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.indigo[900], // Grey background color
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                        ),
+                        child: const Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Temperature is Good For Fish",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.indigo[900], // Grey background color
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                        ),
+                        child: const Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Temperature is Good For Fish",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Widget makeItem({head, subhead}) {
