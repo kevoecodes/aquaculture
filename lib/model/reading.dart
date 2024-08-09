@@ -9,10 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/io.dart';
 
 class Reading {
-  String id, deviceNo, temperature, turbidity, dissolvedOxygen, ammonia;
+  String id, deviceNo, temperature, turbidity, dissolvedOxygen, ammonia, ph;
 
   Reading(this.id, this.deviceNo, this.temperature, this.turbidity,
-      this.dissolvedOxygen, this.ammonia);
+      this.dissolvedOxygen, this.ammonia, this.ph);
 
   static getDeviceReading(BuildContext context) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -36,8 +36,8 @@ class Reading {
     var user = sharedPreferences.getString('user');
     if (user != null) {
       var userData = json.decode(user);
-      final channel = IOWebSocketChannel.connect(
-          '${CallApi.socketURL}ws/device-reading/${userData['device_no']}');
+      final channel =
+          IOWebSocketChannel.connect('${CallApi.socketURL}ws/device-reading/2');
 
       channel.stream.listen((message) {
         print(message);
@@ -50,7 +50,8 @@ class Reading {
                 data['temperature'].toString(),
                 data['turbidity'].toString(),
                 data['dissolved_oxygen'].toString(),
-                data['ammonia'].toString())));
+                data['ammonia'].toString(),
+                data['ph'].toString())));
         // store.dispatch(WebSocketMessageReceivedAction(message));
       });
     }

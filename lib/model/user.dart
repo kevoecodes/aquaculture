@@ -23,4 +23,17 @@ class User {
     localStorage.remove('user');
     localStorage.remove('notifications');
   }
+
+  static void login(BuildContext context, userData) async {
+    StoreProvider.of<AppState>(context).dispatch(UpdateUserAction(User(
+        userData['id'].toString(),
+        '${userData['first_name']} ${userData['last_name']}',
+        userData['email'],
+        userData['email'],
+        userData['email'].toString(),
+        userData['address'])));
+
+    StoreProvider.of<AppState>(context)
+        .dispatch(UpdateAuthenticatedAction(true));
+  }
 }

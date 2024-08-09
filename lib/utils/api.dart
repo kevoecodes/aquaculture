@@ -10,8 +10,9 @@ class CallApi {
   static const String socketURL = 'ws://164.92.118.246:5400/';
   // static const String mediaUrl = 'http://media.gnmcargo.com/';
 
-  // static const String url = 'http://127.0.0.1:4100/';
-  // static const String url = 'http://192.168.0.102:4100/';
+  // static const String url = 'http://127.0.0.1:5400/';
+  // static const String url = 'http://192.168.0.113:5400/';
+  // static const String socketURL = 'ws://192.168.0.113:5400/';
   // static const String docURL = 'http://192.168.0.102:3006/';
 
   static const String mediaUrl = 'http://media.gnmcargo.com/';

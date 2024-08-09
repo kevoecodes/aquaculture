@@ -1,6 +1,9 @@
-import 'package:aquaculture/login.dart';
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:aquaculture/login.dart';
+import 'package:aquaculture/model/user.dart';
+import 'package:aquaculture/utils/api.dart';
+import 'package:flutter/material.dart';
 
 class MySplashViews extends StatefulWidget {
   @override
@@ -8,21 +11,37 @@ class MySplashViews extends StatefulWidget {
 }
 
 class _MySplashViewsState extends State<MySplashViews> {
-  void _moveToHome() async {
-    await Future.delayed(
-      Duration(seconds: 2),
-    );
-    Navigator.pushAndRemoveUntil(
+  getUserFromToken() async {
+    var res = await CallApi().authenticatedGetRequest('api/v1/user-from-token');
+    if (res != null) {
+      if (res.statusCode == 200) {
+        var body = json.decode(res!.body);
+
+        // ignore: use_build_context_synchronously
+        User.login(context, body['user']);
+
+        // ignore: use_build_context_synchronously
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (Route<dynamic> _) => false);
+
+        return;
+      }
+    }
+    // ignore: use_build_context_synchronously
+    User.logout(context);
+    Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-        (Route<dynamic> _) => false);
+        MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _moveToHome();
+    getUserFromToken();
   }
 
   @override
@@ -46,7 +65,7 @@ class _MySplashViewsState extends State<MySplashViews> {
             //   height: 100,
             // ),
 
-             SizedBox(
+            SizedBox(
               height: 15,
             ),
             const Text(
@@ -57,7 +76,6 @@ class _MySplashViewsState extends State<MySplashViews> {
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0),
             ),
-           
           ],
         ),
       ),

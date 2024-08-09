@@ -5,4 +5,5 @@ import 'package:aquaculture/redux/reducer.dart';
 
 Store<AppState> store = Store<AppState>(appReDucer,
     initialState: AppState(
-        authenticated: false, reading: Reading('0', '0', '0', '0', '0', '0')));
+        authenticated: false,
+        reading: Reading('0', '0', '0', '0', '0', '0', '0')));

@@ -1,18 +1,28 @@
 import 'package:aquaculture/model/reading.dart';
 import 'package:aquaculture/redux/app_state.dart';
+import 'package:aquaculture/utils/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool switchOne = false, switchTwo = false;
+
+  handleSwitchRequest(String message) {
+    var res = CallApi()
+        .authenticatedPostRequest({'message': message}, 'api/v1/switch-motor');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, Reading>(
-        converter: (store) => store.state.reading!,
+    return StoreConnector<AppState, Reading?>(
+        converter: (store) => store.state.reading,
         builder: (context, reading) {
           return Scaffold(
             body: SafeArea(
@@ -24,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Home',
                             style: TextStyle(
                               color: Colors.black,
@@ -47,21 +57,33 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: makeItem(
-                          head: "${reading.temperature} C",
+                          head:
+                              "${reading != null ? reading.temperature.toString() : '0'} C",
                           subhead: 'Temperature',
                         ),
                       ),
                       Expanded(
                         child: makeItem(
-                          head: "${reading.dissolvedOxygen} NT",
-                          subhead: 'oxygen',
+                          head: (reading != null
+                                      ? reading.turbidity.toString()
+                                      : '0') ==
+                                  '0'
+                              ? 'LOW'
+                              : 'HIGH',
+                          subhead: 'Turbidity',
+                        ),
+                      ),
+                      Expanded(
+                        child: makeItem(
+                          head: reading != null ? reading.ph : '0',
+                          subhead: 'PH Value',
                         ),
                       )
                     ],
                   )),
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: EdgeInsets.all(10.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.indigo[300], // Grey background color
@@ -69,121 +91,69 @@ class _HomeScreenState extends State<HomeScreen> {
                               BorderRadius.circular(10), // Rounded corners
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Center(
-                            child: Table(
-                              defaultVerticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              children: [
-                                // First Row
-                                TableRow(
-                                  children: [
-                                    Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8),
-                                      child: Text(
-                                        '1000L',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                18), // Adjust the font size
-                                      ),
-                                    ),
-                                    Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8),
-                                      child: Text(
-                                        '60ntu',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                18), // Adjust the font size
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                // First Row Labels
-                                TableRow(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        'Water Level',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                16), // Adjust the font size
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        'Turbidity Level',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                16), // Adjust the font size
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                // Second Row
-                                TableRow(
-                                  children: [
-                                    Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8),
-                                      child: Text(
-                                        '100mcg/l',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                18), // Adjust the font size
-                                      ),
-                                    ),
-                                    Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8),
-                                      child: Text(
-                                        '7',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                18), // Adjust the font size
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                // Second Row Labels
-                                TableRow(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        'Ammonia Value',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                16), // Adjust the font size
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        'PH Value',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                16), // Adjust the font size
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                          padding: EdgeInsets.all(10.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Switch One',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  Switch(
+                                    value: switchOne,
+                                    onChanged: (value) {
+                                      // Handle switch state change
+                                      setState(() {
+                                        switchOne = value;
+                                      });
+                                      handleSwitchRequest(value ? 'm1' : 'm0');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.indigo[300], // Grey background color
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Switch Two',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  Switch(
+                                    value: switchTwo,
+                                    onChanged: (value) {
+                                      // Handle switch state change
+                                      handleSwitchRequest(value ? 'm3' : 'm2');
+                                      setState(() {
+                                        switchTwo = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -199,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               BorderRadius.circular(10), // Rounded corners
                         ),
                         child: const Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: EdgeInsets.all(20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -226,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               BorderRadius.circular(10), // Rounded corners
                         ),
                         child: const Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: EdgeInsets.all(20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -253,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               BorderRadius.circular(10), // Rounded corners
                         ),
                         child: const Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: EdgeInsets.all(20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -282,13 +252,13 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Container(
         // color: Colors.grey,
-        height: 180,
-        width: 150,
+        height: 130,
+        width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
         ),
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(colors: [
@@ -299,9 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 head,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.black,
-                    fontSize: 24,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold),
               ),
               Column(
@@ -310,12 +280,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: <Widget>[
                   Text(
                     subhead,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                 ],
